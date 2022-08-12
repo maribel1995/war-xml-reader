@@ -59,7 +59,6 @@ function App() {
     //parse xmls
     const parser = new XMLParser();
     const jObj = xmls.map((xml, i) => {
-      console.log(parser.parse(xml), i);
       return { ...parser.parse(xml), id: ids[i] };
     });
 
@@ -70,7 +69,6 @@ function App() {
   };
 
   const rows = objetos.map((objeto) => {
-    console.log(objeto);
     const { ide, dest, total } = objeto.CFe.infCFe;
     const [y1, y2, y3, y4, m1, m2, d1, d2] = ide.dEmi.toString();
     const cpfLength = dest.CPF?.toString().length;
@@ -100,10 +98,14 @@ function App() {
   ));
 
   const handleOnClick = (event, row) => {
-    const isSelected = selectedRows.indexOf(row) !== -1;
-    console.log(selectedRows.indexOf(row));
+    if (typeof row === "boolean") return;
+
+    const isSelected = selectedRows.some(
+      (selectedRow) => selectedRow.id === row.id
+    );
+
     if (isSelected) {
-      setSelectedRows((prev) => [...prev].filter((it) => row !== it));
+      setSelectedRows((prev) => [...prev].filter((it) => row.id !== it.id));
       return;
     }
     setSelectedRows((prev) => [...prev, row]);
@@ -112,9 +114,9 @@ function App() {
 
   const table = rows.map((row, j) => {
     return (
-      <TableRow
+      <CustomizedTableRow
         key={`tableRow${j}`}
-        selected={selectedRows.indexOf(row) !== -1}
+        selected={selectedRows.some((selectedRow) => selectedRow.id === row.id)}
         onClick={(e) => handleOnClick(e, row)}
       >
         <TableCell>
@@ -125,7 +127,7 @@ function App() {
             {row[cell.field]}
           </TableCell>
         ))}
-      </TableRow>
+      </CustomizedTableRow>
     );
   });
 
