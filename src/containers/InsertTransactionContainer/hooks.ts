@@ -1,6 +1,7 @@
 import {  useEffect } from "react";
 import { useActions } from "./actions.ts";
 import { useSelectors } from "./selectors.ts";
+import { insertTransaction } from "../../service/Service";
 
 export function useInsertTransactionContainer({ accessToken }) {
   const selectors = useSelectors();
@@ -33,23 +34,24 @@ export function useInsertTransactionContainer({ accessToken }) {
 
   const handleInsertTransaction = async () => {
     setIsLoading(true);
+    // console.log(rowSelectionModel, rows)
     // const transactionToInsert = transactions.filter((transaction) => {
     //   return rowSelectionModel.includes(transaction.consistencyKey);
     // });
 
-    // const insertTransactionsPromises = transactionToInsert.map(
-    //   async (transaction) => {
-    //     const { accessKey, transactionId } = transaction;
-    //     const insertedTransaction = insertTransaction({
-    //       chaveAcesso: accessKey,
-    //       transactionId,
-    //       accessToken,
-    //     });
-    //     return insertedTransaction;
-    //   }
-    // );
+    const insertTransactionsPromises = rows.map(
+      async (transaction) => {
+        const { accessKey, transactionId } = transaction;
+        const insertedTransaction = insertTransaction({
+          chaveAcesso: accessKey,
+          transactionId,
+          accessToken,
+        });
+        return insertedTransaction;
+      }
+    );
 
-    // await Promise.all(insertTransactionsPromises);
+    await Promise.all(insertTransactionsPromises);
     setIsLoading(false);
     setSuccessInsertion(true);
   };

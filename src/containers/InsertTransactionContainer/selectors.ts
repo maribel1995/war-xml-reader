@@ -31,9 +31,9 @@ export function useSelectors() {
             transactionId: "",
           };
       }
-
+      
       const foundTransaction = transactions.find(
-        (transaction) => transaction.VALOR === file.totalValue
+        (transaction) => Number(transaction.VALOR) === Number(file.totalValue)
       );
 
       if (!foundTransaction) {
