@@ -6,7 +6,7 @@ export function useActions({ accessToken, setIsLoading, setFileTransactionEntity
   const fetchTransactionsByXmlCPF = useCallback(async (file) => {
     setIsLoading(true);
     const fileTransactions = await readXml(file?.[0]);
-
+    console.log({fileTransactions})
     setFileTransactionEntity(
       fileTransactions.reduce((acc, curr) => {
         return { ...acc, [curr.id]: curr };

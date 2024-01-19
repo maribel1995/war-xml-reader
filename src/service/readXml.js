@@ -3,43 +3,57 @@ import * as zip from "@zip.js/zip.js";
 import moment from "moment";
 
 export const readXml = async (zipFile) => {
-    // criar blob zip reader
-    // ler blob
-    console.log(zipFile)
-    const zipReader = new zip.ZipReader(new zip.BlobReader(zipFile));
+  // criar blob zip reader
+  // ler blob
+  console.log(zipFile);
+  const zipReader = new zip.ZipReader(new zip.BlobReader(zipFile));
 
-    // - get entries from the zip file
-    const entries = await zipReader.getEntries();
+  // - get entries from the zip file
+  const entries = await zipReader.getEntries();
 
-    // - use a TextWriter object to write the unzipped data of the first entry into a string
-    const dataPromises = entries.map((entrie) => {
-      return entrie.getData(new zip.TextWriter());
-    });
+  // - use a TextWriter object to write the unzipped data of the first entry into a string
+  const dataPromises = entries.map((entrie) => {
+    return entrie.getData(new zip.TextWriter());
+  });
 
-    const idspromises = entries.map((entrie) => {
-      return entrie.filename.split(".xml")[0];
-    });
+  const idspromises = entries.map((entrie) => {
+    return entrie.filename.split(".xml")[0];
+  });
 
-    const ids = await Promise.all(idspromises);
+  const ids = await Promise.all(idspromises);
 
-    // getElementsByTagName("infCFe")
-    const xmls = await Promise.all(dataPromises);
+  // getElementsByTagName("infCFe")
+  const xmls = await Promise.all(dataPromises);
 
-    //parse xmls
-    const parser = new XMLParser();
-    const jObj = xmls.map((xml, i) => {
-      return { ...parser.parse(xml), id: ids[i] };
-    });
+  //parse xmls
+  const options = {
+    ignoreAttributes: false,
+    attributeNamePrefix : "",
+    attributesGroupName : "attributes"
+};
+  const parser = new XMLParser(options);
+  const jObj = xmls.map((xml, i) => {
+    return { ...parser.parse(xml), id: ids[i] };
+  });
 
-    // - close the ZipReader object
-    await zipReader.close();
+  // - close the ZipReader object
+  await zipReader.close();
 
-    return jObj.map((objeto) => {
-      const { ide, dest, total } = objeto.CFe.infCFe;
+  return jObj
+  //filtra as notas que não tem CPF
+    .filter((objeto) => {
+      const { dest } = objeto.CFe.infCFe;
+      return dest.CPF
+    })
+    .map((objeto) => {
+      console.log({ objeto });
+      const { ide, dest, total, attributes } = objeto.CFe.infCFe;
       const [y1, y2, y3, y4, m1, m2, d1, d2] = ide.dEmi.toString();
+
       const cpfLength = dest.CPF?.toString().length;
+
       return {
-        id: objeto.id,
+        id: attributes.Id.replace('CFe', ''),
         document: ide.nCFe,
         date: moment(`${y1}${y2}${y3}${y4}-${m1}${m2}-${d1}${d2}`).format(
           "DD/MM/YYYY"
@@ -48,4 +62,4 @@ export const readXml = async (zipFile) => {
         cpf: cpfLength === 10 ? `0${dest.CPF}` : dest.CPF,
       };
     })
-  };
+};

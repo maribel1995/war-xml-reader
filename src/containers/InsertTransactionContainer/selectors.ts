@@ -15,6 +15,7 @@ export function useSelectors() {
   const rows = useMemo(() => {
     if (!fileTransactions || !fileTransactionEntity) return [];
     return Object.entries(fileTransactions).map(([key, transactions]) => {
+      console.log({transactions})
       const file = fileTransactionEntity[key];
       const resp = {
         cpf: file.cpf,
