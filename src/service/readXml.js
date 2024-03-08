@@ -42,6 +42,7 @@ export const readXml = async (zipFile) => {
   return jObj
   //filtra as notas que não tem CPF
     .filter((objeto) => {
+      if(!objeto.CFe) return false;
       const { dest } = objeto.CFe.infCFe;
       return dest.CPF
     })
