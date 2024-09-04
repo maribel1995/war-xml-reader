@@ -7,8 +7,13 @@ import { TextField } from "../components/TextField";
 export function Login({ onLogin }) {
   const [login, setLogin] = useState({ username: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
+  const [isPermited, setIsPermited] = useState(true);
+  const permitedUsers = ["613672"];
 
   const handleClick = async () => {
+    const permitido = permitedUsers.includes(login.username);
+    setIsPermited(permitido);
+    if (!permitido) return;
     setIsLoading(true);
     const accessToken = await getAccessToken({
       password: login.password,
@@ -51,6 +56,7 @@ export function Login({ onLogin }) {
       >
         Logar
       </LoadingButton>
+      {!isPermited && <p>Você não tem permissão</p>}
     </Stack>
   );
 }
