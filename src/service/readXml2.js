@@ -2,7 +2,7 @@ import { XMLParser } from "fast-xml-parser";
 import * as zip from "@zip.js/zip.js";
 import moment from "moment";
 
-export const readXml = async (zipFile) => {
+export const readXml2 = async (zipFile) => {
   // criar blob zip reader
   // ler blob
   console.log(zipFile);
@@ -39,30 +39,18 @@ export const readXml = async (zipFile) => {
   // - close the ZipReader object
   await zipReader.close();
 
-  return (
-    jObj
-      //filtra as notas que não tem CPF
-      .filter((objeto) => {
-        if (!objeto.CFe) return false;
-        const { dest } = objeto.CFe.infCFe;
-        return dest.CPF;
-      })
-      .map((objeto) => {
-        console.log({ objeto });
-        const { ide, dest, total, attributes } = objeto.CFe.infCFe;
-        const [y1, y2, y3, y4, m1, m2, d1, d2] = ide.dEmi.toString();
+  return jObj.map((objeto) => {
+    console.log({ objeto });
+    const { ide, dest, total, attributes } = objeto.nfeProc.NFe.infNFe;
 
-        const cpfLength = dest.CPF?.toString().length;
+    const cpfLength = dest.CPF?.toString().length;
 
-        return {
-          id: attributes.Id.replace("CFe", ""),
-          document: ide.nCFe,
-          date: moment(`${y1}${y2}${y3}${y4}-${m1}${m2}-${d1}${d2}`).format(
-            "DD/MM/YYYY"
-          ),
-          totalValue: total.vCFe,
-          cpf: cpfLength === 10 ? `0${dest.CPF}` : dest.CPF,
-        };
-      })
-  );
+    return {
+      id: attributes.Id.replace("NFe", ""),
+      // document: ide.nCFe,
+      date: moment(ide.dhEmi).format("DD/MM/YYYY"),
+      totalValue: total.ICMSTot.vProd,
+      cpf: cpfLength === 10 ? `0${dest.CPF}` : dest.CPF,
+    };
+  });
 };

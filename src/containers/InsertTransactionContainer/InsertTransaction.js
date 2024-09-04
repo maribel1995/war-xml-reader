@@ -6,7 +6,7 @@ import { DatePicker } from "../../components/DatePicker";
 import { Input, Button, Snackbar, Alert } from "@mui/material";
 import { useInsertTransactionContainer } from "./hooks.ts";
 
-export function InsertTransaction({ accessToken }) {
+export function InsertTransaction({ accessToken, xmlStrategy }) {
   const {
     handleInsertTransaction,
     handleRowSelection,
@@ -18,7 +18,7 @@ export function InsertTransaction({ accessToken }) {
     setFile,
     date,
     clearState,
-  } = useInsertTransactionContainer({ accessToken });
+  } = useInsertTransactionContainer({ accessToken, xmlStrategy });
 
   return (
     <Stack alignItems="center">

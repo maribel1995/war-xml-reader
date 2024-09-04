@@ -6,8 +6,15 @@ import { Login } from "./containers/Login";
 
 function App() {
   const [accessToken, setAccessToken] = useState(null);
-
-  const handleLogin = (value) => setAccessToken(value);
+  const [user, setUser] = useState(null);
+  const handleLogin = (value, user) => {
+    setAccessToken(value);
+    setUser(user);
+  };
+  const users = {
+    618295: "NF",
+    613672: "CF",
+  };
 
   return (
     <Stack
@@ -17,7 +24,10 @@ function App() {
       sx={{ backgroundColor: "#282c34", minHeight: "100vh" }}
     >
       {accessToken ? (
-        <InsertTransaction accessToken={accessToken} />
+        <InsertTransaction
+          accessToken={accessToken}
+          xmlStrategy={users[user]}
+        />
       ) : (
         <Login onLogin={handleLogin} />
       )}

@@ -8,7 +8,7 @@ export function Login({ onLogin }) {
   const [login, setLogin] = useState({ username: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [isPermited, setIsPermited] = useState(true);
-  const permitedUsers = ["613672"];
+  const permitedUsers = ["613672", "618295"];
 
   const handleClick = async () => {
     const permitido = permitedUsers.includes(login.username);
@@ -21,7 +21,7 @@ export function Login({ onLogin }) {
     });
     setIsLoading(false);
 
-    onLogin(accessToken);
+    onLogin(accessToken, login.username);
   };
 
   const handleInputChange = (e) => {

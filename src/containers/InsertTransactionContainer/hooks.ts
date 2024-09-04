@@ -1,13 +1,14 @@
-import {  useEffect } from "react";
+import { useEffect } from "react";
 import { useActions } from "./actions.ts";
 import { useSelectors } from "./selectors.ts";
 import { insertTransaction } from "../../service/Service";
 
-export function useInsertTransactionContainer({ accessToken }) {
+export function useInsertTransactionContainer({ accessToken, xmlStrategy }) {
   const selectors = useSelectors();
-    const { fetchTransactionsByXmlCPF } = useActions({
+  const { fetchTransactionsByXmlCPF } = useActions({
     ...selectors,
     accessToken,
+    xmlStrategy,
   });
 
   const {
@@ -24,7 +25,7 @@ export function useInsertTransactionContainer({ accessToken }) {
     setFile,
     date,
     file,
-  } = selectors
+  } = selectors;
 
   useEffect(() => {
     if (!file) return;
@@ -39,17 +40,15 @@ export function useInsertTransactionContainer({ accessToken }) {
     //   return rowSelectionModel.includes(transaction.consistencyKey);
     // });
 
-    const insertTransactionsPromises = rows.map(
-      async (transaction) => {
-        const { accessKey, transactionId } = transaction;
-        const insertedTransaction = insertTransaction({
-          chaveAcesso: accessKey,
-          transactionId,
-          accessToken,
-        });
-        return insertedTransaction;
-      }
-    );
+    const insertTransactionsPromises = rows.map(async (transaction) => {
+      const { accessKey, transactionId } = transaction;
+      const insertedTransaction = insertTransaction({
+        chaveAcesso: accessKey,
+        transactionId,
+        accessToken,
+      });
+      return insertedTransaction;
+    });
 
     await Promise.all(insertTransactionsPromises);
     setIsLoading(false);
@@ -65,14 +64,14 @@ export function useInsertTransactionContainer({ accessToken }) {
     setDate({ ...date, [name]: value });
   };
 
-    const clearState = () => {
-      setDate({ startDate: "", endDate: "" });
-      setFile(null);
-      setFileTransactionEntity(null);
-      setRowSelectionModel([]);
-      setSuccessInsertion(false);
-      setFileTransactions(null)
-    };
+  const clearState = () => {
+    setDate({ startDate: "", endDate: "" });
+    setFile(null);
+    setFileTransactionEntity(null);
+    setRowSelectionModel([]);
+    setSuccessInsertion(false);
+    setFileTransactions(null);
+  };
 
   return {
     handleInsertTransaction,
