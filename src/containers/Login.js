@@ -20,6 +20,7 @@ export function Login({ onLogin }) {
       username: login.username,
     });
     setIsLoading(false);
+
     onLogin(accessToken);
   };
 
