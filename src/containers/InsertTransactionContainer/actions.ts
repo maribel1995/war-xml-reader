@@ -45,11 +45,12 @@ export function useActions({
       setIsLoading(false);
     },
     [
-      date,
-      accessToken,
+      setIsLoading,
+      xml,
       setFileTransactionEntity,
       setFileTransactions,
-      setIsLoading,
+      date,
+      accessToken,
     ]
   );
 
