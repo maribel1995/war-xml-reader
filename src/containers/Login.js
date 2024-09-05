@@ -8,7 +8,7 @@ export function Login({ onLogin }) {
   const [login, setLogin] = useState({ username: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [isPermited, setIsPermited] = useState(true);
-  const permitedUsers = ["613672", "618295"];
+  const permitedUsers = ["613672", "618295", "614294"];
 
   const handleClick = async () => {
     const permitido = permitedUsers.includes(login.username);

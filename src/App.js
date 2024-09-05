@@ -14,6 +14,7 @@ function App() {
   const users = {
     618295: "NF",
     613672: "CF",
+    614294: "NF",
   };
 
   return (
