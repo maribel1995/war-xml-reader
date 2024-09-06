@@ -14,8 +14,9 @@ export function InsertTransaction({ accessToken, xmlStrategy }) {
     rows,
     rowSelectionModel,
     isLoading,
+    errorReadingXml,
     successInsertion,
-    setFile,
+    handleSetFile,
     date,
     clearState,
   } = useInsertTransactionContainer({ accessToken, xmlStrategy });
@@ -39,21 +40,27 @@ export function InsertTransaction({ accessToken, xmlStrategy }) {
       </Stack>
       {date.startDate && date.endDate && (
         <Fragment>
-          {rows.length === 0 && (
+          {rows.length === 0 && !errorReadingXml && (
             <label htmlFor="contained-button-file">
               <Input
                 accept="application/zip"
                 id="contained-button-file"
                 type="file"
                 sx={{ display: "none" }}
-                onChange={(e) => setFile(e.target.files)}
+                onChange={handleSetFile}
               />
               <Button variant="contained" component="span">
                 Upload do xml
               </Button>
             </label>
           )}
-          {isLoading && <p>Loading...</p>}
+          {isLoading && !errorReadingXml && <p>Loading...</p>}
+          {errorReadingXml && (
+            <Fragment>
+              <Alert severity="error">{errorReadingXml}</Alert>
+              <Button onClick={clearState}>Refazer</Button>
+            </Fragment>
+          )}
           {rows.length > 0 && (
             <Fragment>
               <TableComponent rows={rows} onRowSelection={handleRowSelection} />

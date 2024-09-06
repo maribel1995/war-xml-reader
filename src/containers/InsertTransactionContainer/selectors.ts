@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import {InsertTransactionsState} from './interfaces'
+import { InsertTransactionsState } from "./interfaces";
 
 export function useSelectors() {
   const [date, setDate] = useState({ startDate: "", endDate: "" });
@@ -8,6 +8,7 @@ export function useSelectors() {
     useState<InsertTransactionsState["fileTransactions"]>(null);
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorReadingXml, setErrorReadingXml] = useState("");
   const [successInsertion, setSuccessInsertion] = useState(false);
   const [fileTransactionEntity, setFileTransactionEntity] =
     useState<InsertTransactionsState["fileTransactionEntity"]>(null);
@@ -15,24 +16,24 @@ export function useSelectors() {
   const rows = useMemo(() => {
     if (!fileTransactions || !fileTransactionEntity) return [];
     return Object.entries(fileTransactions).map(([key, transactions]) => {
-      console.log({transactions})
+      console.log({ transactions });
       const file = fileTransactionEntity[key];
       const resp = {
         cpf: file.cpf,
         accessKey: key,
         value: file.totalValue,
         date: file.date,
-        id:key,
+        id: key,
       };
       if (!transactions.length) {
         return {
-            ...resp,
-            collected: true,
-            error: false,
-            transactionId: "",
-          };
+          ...resp,
+          collected: true,
+          error: false,
+          transactionId: "",
+        };
       }
-      
+
       const foundTransaction = transactions.find(
         (transaction) => Number(transaction.VALOR) === Number(file.totalValue)
       );
@@ -70,6 +71,8 @@ export function useSelectors() {
     setSuccessInsertion,
     fileTransactionEntity,
     setFileTransactionEntity,
+    setErrorReadingXml,
+    errorReadingXml,
     rows,
   };
 }

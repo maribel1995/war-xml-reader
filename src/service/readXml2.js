@@ -41,15 +41,24 @@ export const readXml2 = async (zipFile) => {
 
   return jObj.map((objeto) => {
     console.log({ objeto });
-    const { ide, dest, total, attributes } = objeto.nfeProc.NFe.infNFe;
-
+    const nota = objeto?.nfeProc?.NFe?.infNFe;
+    if (!nota) {
+      throw new Error(
+        `Arquivo xml não encontrado, verifique se os arquivos foram compactados fora de uma pasta`
+      );
+    }
+    const { ide, dest, total, attributes } = nota;
+    const id = attributes.Id.replace("NFe", "");
+    if (!dest?.CPF) {
+      throw new Error(`CPF não encontrado no xml de chave: ${id}`);
+    }
     const cpfLength = dest.CPF?.toString().length;
     const totalProd = total.ICMSTot.vProd;
     const totalDesconto = total.ICMSTot.vDesc;
     const totalValue = totalDesconto ? totalProd - totalDesconto : totalProd;
     console.log({ totalDesconto });
     return {
-      id: attributes.Id.replace("NFe", ""),
+      id,
       // document: ide.nCFe,
       date: moment(ide.dhEmi).format("DD/MM/YYYY"),
       totalValue,

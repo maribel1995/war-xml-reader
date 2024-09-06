@@ -25,6 +25,8 @@ export function useInsertTransactionContainer({ accessToken, xmlStrategy }) {
     setFile,
     date,
     file,
+    errorReadingXml,
+    setErrorReadingXml,
   } = selectors;
 
   useEffect(() => {
@@ -71,14 +73,22 @@ export function useInsertTransactionContainer({ accessToken, xmlStrategy }) {
     setRowSelectionModel([]);
     setSuccessInsertion(false);
     setFileTransactions(null);
+    setErrorReadingXml("");
+    setIsLoading(false);
+  };
+
+  const handleSetFile = (e) => {
+    setFile(e.target.files);
   };
 
   return {
+    handleSetFile,
     handleInsertTransaction,
     handleRowSelection,
     handleInputChange,
     rows,
     setIsLoading,
+    errorReadingXml,
     setSuccessInsertion,
     setRowSelectionModel,
     setDate,
