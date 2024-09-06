@@ -44,12 +44,15 @@ export const readXml2 = async (zipFile) => {
     const { ide, dest, total, attributes } = objeto.nfeProc.NFe.infNFe;
 
     const cpfLength = dest.CPF?.toString().length;
-
+    const totalProd = total.ICMSTot.vProd;
+    const totalDesconto = total.ICMSTot.vDesc;
+    const totalValue = totalDesconto ? totalProd - totalDesconto : totalProd;
+    console.log({ totalDesconto });
     return {
       id: attributes.Id.replace("NFe", ""),
       // document: ide.nCFe,
       date: moment(ide.dhEmi).format("DD/MM/YYYY"),
-      totalValue: total.ICMSTot.vProd,
+      totalValue,
       cpf: cpfLength === 10 ? `0${dest.CPF}` : dest.CPF,
     };
   });
