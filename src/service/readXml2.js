@@ -38,31 +38,59 @@ export const readXml2 = async (zipFile) => {
   console.log({ jObj });
   // - close the ZipReader object
   await zipReader.close();
+  const notasSemCPF = [];
+  const notasCancelada = [];
+  const objetos = jObj
+    .filter((objeto) => {
+      console.log(objeto);
+      const nota = objeto?.nfeProc?.NFe?.infNFe;
+      console.log(nota);
+      if (!nota) {
+        if (!objeto?.nfeProc?.protNFe) {
+          throw new Error(
+            `Arquivo xml não encontrado, verifique se os arquivos foram compactados fora de uma pasta`
+          );
+        }
+        notasCancelada.push(objeto.id);
+        return false;
+      }
+      const { ide, dest, total, attributes } = nota;
+      const id = attributes.Id.replace("NFe", "");
+      if (!dest?.CPF) {
+        notasSemCPF.push(id);
+        return false;
+      }
+      return true;
+    })
+    .map((objeto) => {
+      const nota = objeto?.nfeProc?.NFe?.infNFe;
+      console.log(nota);
 
-  return jObj.map((objeto) => {
-    console.log({ objeto });
-    const nota = objeto?.nfeProc?.NFe?.infNFe;
-    if (!nota) {
-      throw new Error(
-        `Arquivo xml não encontrado, verifique se os arquivos foram compactados fora de uma pasta`
-      );
-    }
-    const { ide, dest, total, attributes } = nota;
-    const id = attributes.Id.replace("NFe", "");
-    if (!dest?.CPF) {
-      throw new Error(`CPF não encontrado no xml de chave: ${id}`);
-    }
-    const cpfLength = dest.CPF?.toString().length;
-    const totalProd = total.ICMSTot.vProd;
-    const totalDesconto = total.ICMSTot.vDesc;
-    const totalValue = totalDesconto ? totalProd - totalDesconto : totalProd;
-    console.log({ totalDesconto });
-    return {
-      id,
-      // document: ide.nCFe,
-      date: moment(ide.dhEmi).format("DD/MM/YYYY"),
-      totalValue,
-      cpf: cpfLength === 10 ? `0${dest.CPF}` : dest.CPF,
-    };
-  });
+      const { ide, dest, total, attributes } = nota;
+      const id = attributes.Id.replace("NFe", "");
+      const cpfLength = dest.CPF?.toString().length;
+      const totalProd = total.ICMSTot.vProd;
+      const totalDesconto = total.ICMSTot.vDesc;
+      const totalValue = totalDesconto ? totalProd - totalDesconto : totalProd;
+      console.log({ totalDesconto });
+      return {
+        id,
+        // document: ide.nCFe,
+        date: moment(ide.dhEmi).format("DD/MM/YYYY"),
+        totalValue,
+        cpf: cpfLength === 10 ? `0${dest.CPF}` : dest.CPF,
+      };
+    });
+
+  if (notasCancelada.length > 0) {
+    throw new Error(`Notas canceladas: ${notasCancelada.join(", ")}`);
+  }
+
+  if (notasSemCPF.length > 0) {
+    throw new Error(
+      `CPF não encontrado nos xmls de chaves: ${notasSemCPF.join(", ")}`
+    );
+  }
+
+  return objetos;
 };
