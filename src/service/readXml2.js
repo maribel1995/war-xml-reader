@@ -54,7 +54,7 @@ export const readXml2 = async (zipFile) => {
         notasCancelada.push(objeto.id);
         return false;
       }
-      const { ide, dest, total, attributes } = nota;
+      const { dest, attributes } = nota;
       const id = attributes.Id.replace("NFe", "");
       if (!dest?.CPF) {
         notasSemCPF.push(id);
