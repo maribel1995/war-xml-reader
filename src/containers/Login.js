@@ -1,14 +1,48 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getAccessToken } from "../service/Service";
 import { Stack } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { TextField } from "../components/TextField";
+import { getLojasCredenciadas } from "../service/Service";
 
 export function Login({ onLogin }) {
   const [login, setLogin] = useState({ username: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [isPermited, setIsPermited] = useState(true);
   const permitedUsers = ["613672", "618295", "614294"];
+
+  useEffect(() => {
+    const fetchLojasCredenciadas = async () => {
+      const resp = await getLojasCredenciadas();
+      const uniqueEmails = new Set();
+      const dadosLojas = resp
+        .map((loja) => ({
+          email: loja.email,
+          telefone: loja.telefone,
+          responsavel: loja.responsavel,
+        }))
+        .filter((loja) => {
+          if (uniqueEmails.has(loja.email)) {
+            return false;
+          } else {
+            uniqueEmails.add(loja.email);
+            return true;
+          }
+        });
+      const emailStrings = [];
+      let emailChunk = [];
+      dadosLojas.forEach((loja, index) => {
+        emailChunk.push(loja.email);
+        if (emailChunk.length === 20 || index === dadosLojas.length - 1) {
+          emailStrings.push(emailChunk.join(","));
+          emailChunk = [];
+        }
+      });
+
+      console.log(emailStrings);
+    };
+    fetchLojasCredenciadas();
+  }, []);
 
   const handleClick = async () => {
     const permitido = permitedUsers.includes(login.username);
