@@ -38,12 +38,15 @@ export const readXml = async (zipFile) => {
   console.log({ jObj });
   // - close the ZipReader object
   await zipReader.close();
-
+  const notasSemCPF = [];
   return (
     jObj
       //filtra as notas que não tem CPF
       .filter((objeto) => {
-        if (!objeto.CFe) return false;
+        if (!objeto.CFe) {
+          notasSemCPF.push(objeto.id);
+          return false;
+        }
         const { dest } = objeto.CFe.infCFe;
         return dest.CPF;
       })
@@ -62,6 +65,7 @@ export const readXml = async (zipFile) => {
           ),
           totalValue: total.vCFe,
           cpf: cpfLength === 10 ? `0${dest.CPF}` : dest.CPF,
+          notasSemCPF,
         };
       })
   );

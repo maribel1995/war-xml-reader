@@ -16,6 +16,9 @@ function App() {
     613672: "CF",
     614294: "NF",
     613738: "CF",
+    627111: "NF",
+    627106: "NF",
+    623961: "CF",
   };
 
   return (
@@ -31,7 +34,7 @@ function App() {
           xmlStrategy={users[user]}
         />
       ) : (
-        <Login onLogin={handleLogin} />
+        <Login onLogin={handleLogin} permitedUsers={Object.keys(users)} />
       )}
     </Stack>
   );
